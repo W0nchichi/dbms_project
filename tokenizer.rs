@@ -1,4 +1,4 @@
-use super::token;
+use crate::dbms_rust_project::token::Token;
 /*
 Basically, the tokenizers job is to categorize the keywords in the Query, let's define a few goals
 1. check if all words are valid in the language
@@ -28,7 +28,100 @@ impl<'a> Tokenizer<'a>{
         tokenizer
     }
 
-    pub fn tokenize_next_token(&self){
+    // |‾|_|‾| |‾‾‾| |‾|    |‾‾‾| |‾‾‾| |‾‾‾|
+    // |     | |===  | |__  |  _| |===  |  <
+    // |_|‾|_| |___| |____| |_|   |___| |_|\_\
+    pub fn next_token(&mut self){
+        if self.position < self.input.len() {
+            //update position by 1, change char to the next char in a slice of the input
+            //idk if you can properly use .next, but probably not right
+            self.position += 1;
+            self.current_char = Some(self.input.chars().nth(self.position).unwrap());
+        } else {
+            self.current_char = None;
+        }
+    }
+
+    //getting rid of those pesky whitespaces
+    pub fn skip_whitespace(&mut self){
+        while let Some(char) = self.current_char {
+            if char.is_whitespace(){
+                self.next_token();
+            } else {
+                break;
+            }
+        }
+    }
+    
+    //from a starting character, identify the correct token necessary
+    pub fn identify_token(&mut self) -> Token{
+        let start = self.position - 1;
+
+        //make a while loop over all of the characters of the token until a space
+        while let Some(c) = self.current_char {
+            if c.is_alphanumeric() || c == '_' {
+                self.next_token();
+            } else {
+                break;
+            }
+        }
+        //match the word with that position
+        let end = self.position - 1;
+        let ident = &self.input[start..end];
+        match ident.to_uppercase().as_str() {
+            "SELECT" => {self.next_token(); Token::Select}
+            "FROM" => {self.next_token(); Token::From}
+            /*
+            NEED TO FINISH THIS TOKENIZATION!!!!!
+             */
+            _ => {
+                self.next_token();
+                Token::EndOfFunction
+            }
+        }
+        
+    }
+
+
+    // |‾‾‾‾| |‾‾‾‾| |‾|/‾| |‾‾‾| |‾\ ||
+    //  ‾||‾  | |‾|| |   /  |===  |  \||
+    //   ||   |__‾_| |_|\_\ |___| |_|\_|
+
+
+    /* To reference the Token.rs Enum, use this v
+    match self.current_char {
+        Some('*') => {
+            Next_Word_Function()
+            Token::Asterisk
+        }
+    }
+    */
+
+    pub fn tokenize_next_token(&mut self) -> Token{
+        self.skip_whitespace();
+
+        match self.current_char {
+            Some('*') => {
+                self.next_token();
+                Token::Asterisk
+            }
+            Some(';') => {
+                self.next_token();
+                Token::Semicolon
+            }
+            Some(',') => {
+                self.next_token();
+                Token::Comma
+            }   
+            //don't need a parameter since already know current token
+            Some(char) => self.identify_token(),
+            None => Token::EndOfFunction,
+            _ => {
+                self.next_token();
+                Token::EndOfFunction
+            }
+        }
+        
         
     }
 }

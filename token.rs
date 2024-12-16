@@ -12,6 +12,9 @@ pub enum Token {
     GroupBy,
     // Identifiers (i.e. age → Identifier (Identifier("age")
     Identifier(String),
+    // Literals
+    StringLiteral(String),
+    NumericLiteral(f64),
     //Operators (<, !=)
     Equals,
     NotEquals,
@@ -19,11 +22,14 @@ pub enum Token {
     LessThan,
     GreaterThanOrEqual,
     LessThanOrEqual,
+    Asterisk,
     //Punctuation (i.e. ',', ';')
     Comma,
     Semicolon,
     LeftParen,
     RightParen,
     //End (I guess?)
-    EndOfFunction
+    EndOfFunction,
+    // Errors
+    Illegal(char),
 }
