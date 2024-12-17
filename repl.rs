@@ -38,7 +38,7 @@ impl Repl {
         history.join(" ")
     }
 
-    pub fn main_loop(&mut self) {
+    pub fn main_loop(&mut self) -> String {
         let stdin = io::stdin();
 
         // Lock the handle for buffered reading throughout
@@ -77,13 +77,16 @@ impl Repl {
             if self.buffer.contains(';') {
                 Self::clean_input(&mut self.buffer);
                 self.history.push(self.buffer.clone());
+                self.is_in_multiline = false;
                 break;
             }
             Self::clean_input(&mut self.buffer);
             self.history.push(self.buffer.clone());
+            self.is_in_multiline = true;
         }
         // Where we can actually access and return the input
         let result: String = Self::multiline_to_singleline(&mut self.history);
         print!("Input is {:?}", result);
+        return result
     }
 }

@@ -1,5 +1,8 @@
+// src/dbms_rust_project/token.rs
+
+#[derive(Debug, PartialEq, Clone)]
 pub enum Token {
-    //Keywords (i.e. Select)
+    // Keywords
     Select,
     Insert,
     Delete,
@@ -10,26 +13,32 @@ pub enum Token {
     And,
     Or,
     GroupBy,
-    // Identifiers (i.e. age → Identifier (Identifier("age")
+    
+    // Identifiers
     Identifier(String),
+    
     // Literals
     StringLiteral(String),
     NumericLiteral(f64),
-    //Operators (<, !=)
+    
+    // Operators
     Equals,
     NotEquals,
     GreaterThan,
     LessThan,
     GreaterThanOrEqual,
     LessThanOrEqual,
-    Asterisk,
-    //Punctuation (i.e. ',', ';')
+    
+    // Punctuation
     Comma,
     Semicolon,
     LeftParen,
     RightParen,
-    //End (I guess?)
-    EndOfFunction,
+    Asterisk,
+    
+    // End of Input
+    EOF,
+    
     // Errors
     Illegal(char),
 }
